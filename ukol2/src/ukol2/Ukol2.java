@@ -26,18 +26,18 @@ public class Ukol2 {
             BufferedReader vstup = new BufferedReader(new FileReader(args[0]));
             int k = 0;
             String r = vstup.readLine();
-            String [] roww = r.split(";");
+            String [] roww = r.split(",");
             int c = Integer.parseInt(roww[0]);           
             double p[] = new double[c*3];
             
             for(int i=0;i < c;i++){
                 row = vstup.readLine();
-                items = row.split(";");
+                items = row.split(",");
                 parse(items,p,k);
                 k = k + 3;
             }  
             while ((row = vstup.readLine())!=null){
-                items = row.split(";");
+                items = row.split(",");
                 parse(items,p,k);
                 k = k + 3;
             }
