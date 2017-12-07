@@ -16,21 +16,39 @@ public class Ukol2 {
      */
     public static void main(String[] args) {
         int exp = 2;
-        int width = 100;
-        int high = 100;
-        double dist[]= {1,2,2};
+        int width = 3;
+        int high = 3;
+        double barsx []= {1,10,3};
+        double barsy []= {2,5,2};
+        double save [] = new double[9];
+//        double barsx []= new double [width];
+//        double barsy []= new double [high];
+//        for (int i =0;i<3;i++){
+//            barsx[i] = i;
+//            barsy[i] = i;
+//        }
+        double x[] = {3,5,1};
+        double y[] = {3,2,2};
+        
+        double dist[]= new double [3];
         double weightdist[] = new double[3];
         double value[] = {3,5,1};
         double helpdist[]= new double [3];
         double truevalue = 0;
         
-        double point = idw(exp,dist,weightdist,truevalue,value,helpdist);
-        System.out.print(point);
+        distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,helpdist);
+//        double point = idw(dist,weightdist,truevalue,value,helpdist);
+        for(int i= 0;i<3;i++){
+        System.out.format("%f\n",save[i]);
+        }
+//        System.out.format("\n");
+//        for(int i =0;i<3;i++){
+//        System.out.print(dist[i]);
+//        }
         
     }
-    public static double idw(int exp,double dist[],double weightdist[],double
+    public static double idw(double dist[],double weightdist[],double
             truevalue, double value[], double helpdist[]){
-        int z0;
         double k =0;
         for (int i =0; i < 3;i++){
             k =k + (1/dist[i]);
@@ -44,5 +62,30 @@ public class Ukol2 {
             truevalue = truevalue + (weightdist[i] * value[i]); 
         }
         return truevalue;
+    }
+    
+    public static void distance(double x[], double y[],double dist[], double
+            barsx [],double barsy [],double save[],double weightdist[],double
+            truevalue, double value[], double helpdist[]){
+        int u =0;
+        int m =0;
+//        for(int m =0;m<3;m++){
+            for (int j =0;j<(3+1);j++){
+                if(j==3){
+                    u = u +1;
+                    j=0;
+                }
+                if (u == 3){
+                    break;
+                }
+                for(int i = 0; i < 3;i++) {
+                    dist[i] = Math.sqrt((x[i] - barsx[j])*(x[i] - barsx[j]) + 
+                        (y[i] - barsy[u])*(y[i] -barsy[u])); 
+                }
+                save[m]= idw(dist,weightdist,truevalue,value,helpdist);
+                m++;
+            }
+//        save[m] = idw(dist,weightdist,truevalue,value,helpdist);
+//        }
     }
 }
