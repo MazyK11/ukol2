@@ -18,8 +18,8 @@ public class Ukol2 {
         int exp = 2;
         int width = 3;
         int high = 3;
-        double barsx []= {1,10,3};
-        double barsy []= {2,5,2};
+        double barsx []= {1,2,3};
+        double barsy []= {1,2,3};
         double save [] = new double[9];
 //        double barsx []= new double [width];
 //        double barsy []= new double [high];
@@ -27,8 +27,8 @@ public class Ukol2 {
 //            barsx[i] = i;
 //            barsy[i] = i;
 //        }
-        double x[] = {3,5,1};
-        double y[] = {3,2,2};
+        double x[] = {10,4,0};
+        double y[] = {80,7,3};
         
         double dist[]= new double [3];
         double weightdist[] = new double[3];
@@ -38,7 +38,7 @@ public class Ukol2 {
         
         distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,helpdist);
 //        double point = idw(dist,weightdist,truevalue,value,helpdist);
-        for(int i= 0;i<3;i++){
+        for(int i= 0;i<9;i++){
         System.out.format("%f\n",save[i]);
         }
 //        System.out.format("\n");
