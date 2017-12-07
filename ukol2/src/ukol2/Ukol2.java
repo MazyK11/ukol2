@@ -5,6 +5,11 @@
  */
 package ukol2;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
  *
  * @author MazyK
@@ -15,7 +20,44 @@ public class Ukol2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        int exp = 2;
+        String row;
+        String [] items;
+        try {
+            BufferedReader vstup = new BufferedReader(new FileReader(args[0]));
+            int k = 0;
+            String r = vstup.readLine();
+            String [] roww = r.split(";");
+            int c = Integer.parseInt(roww[0]);           
+            double p[] = new double[c*3];
+            
+            for (int i = 0;i < c;i++){
+                row = vstup.readLine();
+                items = row.split(";");
+                parse(items,p,k);
+                k = k + 100;
+            }
+        }
+        catch(FileNotFoundException ex){
+            System.out.print("Soubor nebyl nalezen");
+            System.exit(-1);
+        }
+        catch(IOException ex){
+            System.out.print("Chyba při načítání řádku");
+            System.exit(-1);
+        }
+        
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         int width = 3;
         int high = 3;
         double barsx []= {1,2,3};
@@ -32,27 +74,22 @@ public class Ukol2 {
         
         double dist[]= new double [3];
         double weightdist[] = new double[3];
-        double value[] = {3,5,1};
         double helpdist[]= new double [3];
+        double value[] = {3,5,1};
         double truevalue = 0;
         
         distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,helpdist);
-//        double point = idw(dist,weightdist,truevalue,value,helpdist);
         for(int i= 0;i<9;i++){
         System.out.format("%f\n",save[i]);
         }
-//        System.out.format("\n");
-//        for(int i =0;i<3;i++){
-//        System.out.print(dist[i]);
-//        }
         
     }
     public static double idw(double dist[],double weightdist[],double
             truevalue, double value[], double helpdist[]){
         double k =0;
         for (int i =0; i < 3;i++){
-            k =k + (1/dist[i]);
-            helpdist[i] = (1/dist[i]);
+            k =k + (1/Math.pow(dist[i],2));
+            helpdist[i] = (1/Math.pow(dist[i],2));
         }
         for (int i = 0; i< 3;i++){
             weightdist[i] = helpdist[i] * (1/k);
@@ -69,23 +106,26 @@ public class Ukol2 {
             truevalue, double value[], double helpdist[]){
         int u =0;
         int m =0;
-//        for(int m =0;m<3;m++){
-            for (int j =0;j<(3+1);j++){
-                if(j==3){
-                    u = u +1;
-                    j=0;
-                }
-                if (u == 3){
-                    break;
-                }
-                for(int i = 0; i < 3;i++) {
-                    dist[i] = Math.sqrt((x[i] - barsx[j])*(x[i] - barsx[j]) + 
-                        (y[i] - barsy[u])*(y[i] -barsy[u])); 
-                }
-                save[m]= idw(dist,weightdist,truevalue,value,helpdist);
-                m++;
+        for (int j =0;j<(3+1);j++){
+            if(j==3){
+                u = u +1;
+                j=0;
             }
-//        save[m] = idw(dist,weightdist,truevalue,value,helpdist);
-//        }
+            if (u == 3){
+                break;
+            }
+            for(int i = 0; i < 3;i++) {
+                dist[i] = Math.sqrt((x[i] - barsx[j])*(x[i] - barsx[j]) + 
+                        (y[i] - barsy[u])*(y[i] -barsy[u])); 
+            }
+            save[m]= idw(dist,weightdist,truevalue,value,helpdist);
+            m++;
+        }
+    }
+    public static void parse(String []items,double []p,int k){
+        for(int i = 0;i < items.length;i++){
+            p[i+k] = Double.parseDouble(items[i]);
+            System.out.println(p[i]);
+        }
     }
 }
