@@ -30,11 +30,16 @@ public class Ukol2 {
             int c = Integer.parseInt(roww[0]);           
             double p[] = new double[c*3];
             
-            for (int i = 0;i < c;i++){
+            for(int i=0;i < c;i++){
                 row = vstup.readLine();
                 items = row.split(";");
                 parse(items,p,k);
-                k = k + 100;
+                k = k + 3;
+            }  
+            while ((row = vstup.readLine())!=null){
+                items = row.split(";");
+                parse(items,p,k);
+                k = k + 3;
             }
         }
         catch(NumberFormatException ex){
