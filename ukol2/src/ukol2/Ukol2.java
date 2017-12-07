@@ -37,12 +37,16 @@ public class Ukol2 {
                 k = k + 100;
             }
         }
+        catch(NumberFormatException ex){
+            System.out.print("nalezeny chybné znaky\n");
+                System.exit(-1);
+        }
         catch(FileNotFoundException ex){
-            System.out.print("Soubor nebyl nalezen");
+            System.out.print("Soubor nebyl nalezen\n");
             System.exit(-1);
         }
         catch(IOException ex){
-            System.out.print("Chyba při načítání řádku");
+            System.out.print("Chyba při načítání řádku\n");
             System.exit(-1);
         }
         
