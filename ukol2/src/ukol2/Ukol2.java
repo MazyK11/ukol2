@@ -76,9 +76,13 @@ public class Ukol2 {
             y[i] = p[(i*3)+1];
             value[i] = p[(i*3)+2];
         }
+        double barsx []= new double[100];
+        double barsy []= new double [100];
+        maxmin(p,c,barsx,barsy);
+
 //        System.out.print("\n");
-//        for(int i = 0;i < c;i++){
-//            System.out.println(x[i]);
+//        for(int i = 0;i < 100;i++){
+//            System.out.println(barsy[i]);
 //        }
 //        System.out.print("\n");
 //        for(int i = 0;i < c;i++){
@@ -89,8 +93,6 @@ public class Ukol2 {
 //            System.out.println(value[i]);
 //        }
 
-        int barsx []= new int[100];
-        int barsy []= new int [100];
         double save [] = new double[100*100];
         
         for (int i =0;i<100;i++){
@@ -103,27 +105,27 @@ public class Ukol2 {
         double helpdist[]= new double [c];
         double truevalue = 0;
         
-        distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,
-                helpdist,c);
-        for(int i= 0;i < 100*100;i++){
-        System.out.format("%f\n",save[i]);
-        }
-        
-        PrintWriter a;
-        try {
-            a = new PrintWriter(args[1]);
-            for(int i =0;i < 100;i++){
-                for(int j =0;j<100;j++){
-                    a.format("%f ;", save[j+(i*100)]);
-                }
-               a.println();
-            }
-            a.close();
-        }
-        catch(FileNotFoundException ex){
-            System.out.print("Soubor nebyl nalezen\n");
-            System.exit(-1);
-        }
+//        distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,
+//                helpdist,c);
+//        for(int i= 0;i < 100*100;i++){
+//        System.out.format("%f\n",save[i]);
+//        }
+//        
+//        PrintWriter a;
+//        try {
+//            a = new PrintWriter(args[1]);
+//            for(int i =0;i < 100;i++){
+//                for(int j =0;j<100;j++){
+//                    a.format("%f ;", save[j+(i*100)]);
+//                }
+//               a.println();
+//            }
+//            a.close();
+//        }
+//        catch(FileNotFoundException ex){
+//            System.out.print("Soubor nebyl nalezen\n");
+//            System.exit(-1);
+//        }
         
     }
     public static double idw(double dist[],double weightdist[],double
@@ -167,7 +169,47 @@ public class Ukol2 {
     public static void parse(String []items,double []p,int k){
         for(int i = 0;i < items.length;i++){
             p[i+k] = Double.parseDouble(items[i]);
-            System.out.println(p[i+k]);
+//            System.out.println(p[i+k]);
+        }
+    }
+    public static void maxmin(double p[],int c,double barsx [],double barsy [])
+    {
+        for(int j =0;j<2;j++){
+            double max =p[j];
+            for(int i = 0;i < c;i++){
+                if( max >= p[(i*3)+j]){ 
+                }
+                else{
+                max = p[(i*3)+j];
+                }
+            }
+            double min = p[j];
+            for(int i = 0;i < c;i++){
+                if( min <= p[(i*3)+j]){ 
+                }
+                else{
+                    min = p[(i*3)+j];
+                }
+            }
+//            System.out.print(min);
+//            System.out.print("\n");
+//            System.out.print(max);
+//            System.out.print("\n");
+            double r = max- min;
+            r = r/(100-1);
+            if (j==0){
+                barsx[0] = min;
+                for(int m = 1;m < 100;m++){
+                    barsx[m] = barsx[m-1] + r;
+                }
+            }
+            else {
+                barsy[0] = min;
+                for(int m = 1;m < 100;m++){
+                    barsy[m] = barsy[m-1] + r;
+
+                }
+            }
         }
     }
 }
