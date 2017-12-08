@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  *
@@ -106,6 +107,22 @@ public class Ukol2 {
                 helpdist,c);
         for(int i= 0;i < 100*100;i++){
         System.out.format("%f\n",save[i]);
+        }
+        
+        PrintWriter a;
+        try {
+            a = new PrintWriter(args[1]);
+            for(int i =0;i < 100;i++){
+                for(int j =0;j<100;j++){
+                    a.format("%f,",save[j+(i*100)]);
+                }
+               a.println();
+            }
+            a.close();
+        }
+        catch(FileNotFoundException ex){
+            System.out.print("Soubor nebyl nalezen\n");
+            System.exit(-1);
         }
         
     }
