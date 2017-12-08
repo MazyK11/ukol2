@@ -22,25 +22,37 @@ public class Ukol2 {
     public static void main(String[] args) {
         String row;
         String [] items;
+        int c = 0;
+        int k = 0;
         try {
             BufferedReader vstup = new BufferedReader(new FileReader(args[0]));
-            int k = 0;
             String r = vstup.readLine();
             String [] roww = r.split(",");
-            int c = Integer.parseInt(roww[0]);           
-            double p[] = new double[c*3];
-            
+            c = Integer.parseInt(roww[0]);
+        }
+        catch(NumberFormatException ex){
+            System.out.print("nalezeny chybné znaky\n");
+            System.exit(-1);
+        }
+        catch(FileNotFoundException ex){
+            System.out.print("Soubor nebyl nalezen\n");
+            System.exit(-1);
+        }
+        catch(IOException ex){
+            System.out.print("Chyba při načítání řádku\n");
+            System.exit(-1);
+        }
+        double p[] = new double[c*3];
+        // Další try - na naplnění pole p
+        try{
+            BufferedReader vstup = new BufferedReader(new FileReader(args[0]));
+            vstup.readLine();
             for(int i=0;i < c;i++){
                 row = vstup.readLine();
                 items = row.split(",");
                 parse(items,p,k);
                 k = k + 3;
-            }  
-//            while ((row = vstup.readLine())!=null){
-//                items = row.split(",");
-//                parse(items,p,k);
-//                k = k + 3;
-//            }
+            }
         }
         catch(NumberFormatException ex){
             System.out.print("nalezeny chybné znaky\n");
@@ -54,80 +66,84 @@ public class Ukol2 {
             System.out.print("Chyba při načítání řádku\n");
             System.exit(-1);
         }
+        double x[] = new double [c];
+        double y[] = new double [c];
+        double value[] = new double [c];
         
-        
-      
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        int width = 3;
-        int high = 3;
-        double barsx []= {1,2,3};
-        double barsy []= {1,2,3};
-        double save [] = new double[9];
-//        double barsx []= new double [width];
-//        double barsy []= new double [high];
-//        for (int i =0;i<3;i++){
-//            barsx[i] = i;
-//            barsy[i] = i;
+        for(int i =0; i < c;i++){
+            x[i] = p[i*3];
+            y[i] = p[(i*3)+1];
+            value[i] = p[(i*3)+2];
+        }
+//        System.out.print("\n");
+//        for(int i = 0;i < c;i++){
+//            System.out.println(x[i]);
 //        }
-        double x[] = {10,4,0};
-        double y[] = {80,7,3};
+//        System.out.print("\n");
+//        for(int i = 0;i < c;i++){
+//            System.out.println(y[i]);
+//        }
+//        System.out.print("\n");
+//       for(int i = 0;i < c;i++){
+//            System.out.println(value[i]);
+//        }
+
+        int barsx []= new int[100];
+        int barsy []= new int [100];
+        double save [] = new double[100*100];
         
-        double dist[]= new double [3];
-        double weightdist[] = new double[3];
-        double helpdist[]= new double [3];
-        double value[] = {3,5,1};
+        for (int i =0;i<100;i++){
+            barsx[i] = i;
+            barsy[i] = i;
+        }
+
+        double dist[]= new double [c];
+        double weightdist[] = new double[c];
+        double helpdist[]= new double [c];
         double truevalue = 0;
         
-        distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,helpdist);
-        for(int i= 0;i<9;i++){
+        distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,
+                helpdist,c);
+        for(int i= 0;i < 100*100;i++){
         System.out.format("%f\n",save[i]);
         }
         
     }
     public static double idw(double dist[],double weightdist[],double
-            truevalue, double value[], double helpdist[]){
+            truevalue, double value[], double helpdist[],int c){
         double k =0;
-        for (int i =0; i < 3;i++){
+        for (int i =0; i < c;i++){
             k =k + (1/Math.pow(dist[i],2));
             helpdist[i] = (1/Math.pow(dist[i],2));
         }
-        for (int i = 0; i< 3;i++){
+        for (int i = 0; i< c;i++){
             weightdist[i] = helpdist[i] * (1/k);
             
         }
-        for (int i =0;i < 3;i++){
+        for (int i =0;i < c;i++){
             truevalue = truevalue + (weightdist[i] * value[i]); 
         }
         return truevalue;
     }
     
-    public static void distance(double x[], double y[],double dist[], double
-            barsx [],double barsy [],double save[],double weightdist[],double
-            truevalue, double value[], double helpdist[]){
+    public static void distance(double x[], double y[],double dist[], int
+            barsx [],int barsy [],double save[],double weightdist[],double
+            truevalue, double value[], double helpdist[],int c){
         int u =0;
         int m =0;
-        for (int j =0;j<(3+1);j++){
-            if(j==3){
+        for (int j =0;j<(100+1);j++){
+            if(j==100){
                 u = u +1;
                 j=0;
             }
-            if (u == 3){
+            if (u == 100){
                 break;
             }
-            for(int i = 0; i < 3;i++) {
+            for(int i = 0; i < c;i++) {
                 dist[i] = Math.sqrt((x[i] - barsx[j])*(x[i] - barsx[j]) + 
                         (y[i] - barsy[u])*(y[i] -barsy[u])); 
             }
-            save[m]= idw(dist,weightdist,truevalue,value,helpdist);
+            save[m]= idw(dist,weightdist,truevalue,value,helpdist,c);
             m++;
         }
     }
