@@ -114,7 +114,7 @@ public class Ukol2 {
             a = new PrintWriter(args[1]);
             for(int i =0;i < 100;i++){
                 for(int j =0;j<100;j++){
-                    a.format("%f,",save[j+(i*100)]);
+                    a.format("%f ;", save[j+(i*100)]);
                 }
                a.println();
             }
