@@ -36,11 +36,11 @@ public class Ukol2 {
                 parse(items,p,k);
                 k = k + 3;
             }  
-            while ((row = vstup.readLine())!=null){
-                items = row.split(",");
-                parse(items,p,k);
-                k = k + 3;
-            }
+//            while ((row = vstup.readLine())!=null){
+//                items = row.split(",");
+//                parse(items,p,k);
+//                k = k + 3;
+//            }
         }
         catch(NumberFormatException ex){
             System.out.print("nalezeny chybné znaky\n");
@@ -134,7 +134,7 @@ public class Ukol2 {
     public static void parse(String []items,double []p,int k){
         for(int i = 0;i < items.length;i++){
             p[i+k] = Double.parseDouble(items[i]);
-            System.out.println(p[i]);
+            System.out.println(p[i+k]);
         }
     }
 }
