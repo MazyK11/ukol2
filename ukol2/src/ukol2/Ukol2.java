@@ -23,10 +23,12 @@ public class Ukol2 {
     public static void main(String[] args) {
 //      Vytvoření proměnné, do které uložím počet řádků
         int c = 0;
+        int delka = args.length;
 //      try blok pro zjištění počtu řádků, catch zachytává všechny možné výjimky
 //      a ukončuje soubor přes System.exit(-1)
         try {
-            BufferedReader vstup = new BufferedReader(new FileReader(args[0]));
+            BufferedReader vstup = new BufferedReader(new FileReader
+            (args[delka-2]));
             String r = vstup.readLine();
             String [] roww = r.split(",");
             c = Integer.parseInt(roww[0]);
@@ -49,7 +51,8 @@ public class Ukol2 {
 //      následné volání metody, která parsuje načtené hodnoty a naplní jimi 
 //      pole p
         try{
-            BufferedReader vstup = new BufferedReader(new FileReader(args[0]));
+            BufferedReader vstup = new BufferedReader(new FileReader
+            (args[delka-2]));
             String row;
             String [] items;
             int k = 0;
@@ -74,6 +77,21 @@ public class Ukol2 {
             System.exit(-1);
         }
         
+        double exp = 2;
+        try {
+            exp = parametr(delka,args,exp);
+            if (exp <= 0){
+                System.out.print("exponent nemůže být menší nebo rovno 0, "
+                        + "bude použit defaultní exponent 2");
+                exp = 2;
+            }
+        }
+        catch(NumberFormatException ex){
+            System.out.print("nalezeny chybné znaky, bude použit defaultní"
+                    + " exponent 2\n");
+            exp = 2;
+        }
+        
 //      vytvoření polí, které reprezentují načtené hodnoty - pro 
 //      větší přehlednost
         double x[] = new double [c];
@@ -93,12 +111,12 @@ public class Ukol2 {
 
 //      Vytvoření konečného pole save, do kterého se uloží výsledná tabulka
         double save [] = new double[100*100];
-        distance(x,y,barsx,barsy,save,value,c);
+        distance(x,y,barsx,barsy,save,value,c,exp);
 
 //      Zápis do výstupního souboru
         PrintWriter a;
         try {
-            a = new PrintWriter(args[1]);
+            a = new PrintWriter(args[delka-1]);
             for(int i =0;i < 100;i++){
                 for(int j =0;j<100;j++){
                     a.format("%.2f ;", save[j+(i*100)]);
@@ -120,15 +138,15 @@ public class Ukol2 {
 //  první cyklus vypočte koeficient k, druhý cyklus použije vypočtený koeficient
 //  a vytvoří vážené vzdálenosti, třetí cyklus vypočte výslednou hodnotu
 //  interpolovaného bodu
-    public static double idw(double dist[],double value[],int c){
+    public static double idw(double dist[],double value[],int c, double exp){
 //      Vytvoření pomocných proměnných
         double weightdist[] = new double[c];
         double helpdist[]= new double [c];
         double truevalue = 0;
         double k =0;
         for (int i =0; i < c;i++){
-            k =k + (1/Math.pow(dist[i],2));
-            helpdist[i] = (1/Math.pow(dist[i],2));
+            k =k + (1/Math.pow(dist[i],exp));
+            helpdist[i] = (1/Math.pow(dist[i],exp));
         }
         for (int i = 0; i< c;i++){
             weightdist[i] = helpdist[i] * (1/k);
@@ -147,7 +165,8 @@ public class Ukol2 {
 //  uložena do pole save. Při vzdálenosti 0 je bodu přiřazena hodnota bodu
 //  vstupního - jedná se o ten samí bod
     public static void distance(double x[], double y[],double
-            barsx [],double barsy [],double save[], double value[],int c){
+            barsx [],double barsy [],double save[], double value[],int c,
+            double exp){
         double dist[]= new double [c];
         int u =0;
         int m =0;
@@ -172,7 +191,7 @@ public class Ukol2 {
             if(save[m] == value[count]){
             }
             else {
-            save[m]= idw(dist,value,c);
+            save[m]= idw(dist,value,c,exp);
             }
             m++;
         }
@@ -227,4 +246,13 @@ public class Ukol2 {
             }
         }
     }
+    public static double parametr(int delka,String[] args,double exp){
+        for(int i = 0;i < delka;i++){
+            if("-p".equals(args[i])){
+                exp = Double.parseDouble(args[i+1]);
+                return exp;
+            }
+        }
+        return exp;
+    } 
 }
