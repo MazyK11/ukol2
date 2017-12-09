@@ -21,7 +21,8 @@ public class Ukol2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//      Vytvoření proměnné, do které uložím počet řádků
+//      Vytvoření proměnné c, do které uložím počet řádků
+//      do proměnné delka si uložím počet parametrů v args 
         int c = 0;
         int delka = args.length;
 //      try blok pro zjištění počtu řádků, catch zachytává všechny možné výjimky
@@ -77,7 +78,10 @@ public class Ukol2 {
             System.exit(-1);
         }
         
+//      proměnná exp je defaultně nastavená na 2
         double exp = 2;
+//      Pomocí try, catch a podmínky jsou ošetřeny nekorektně zadané parametry
+//      pokud bude zadán nekorektní vstup program použije defaultní exponent 2
         try {
             exp = parametr(delka,args,exp);
             if (exp <= 0){
@@ -133,8 +137,10 @@ public class Ukol2 {
         }
         
     }
-//  metoda výpočtu idw - vstupy: pole vypočtených vzdáleností, pole s hodnotami
-//  jednotlivých bodů a počet řádků. Výstup: hodnota interpolovaného bodu
+//  Metoda výpočtu idw
+//  vstupy: pole vypočtených vzdáleností, pole s hodnotamijednotlivých bodů,
+//  počet řádků a exponent.
+//  Výstup: hodnota interpolovaného bodu
 //  první cyklus vypočte koeficient k, druhý cyklus použije vypočtený koeficient
 //  a vytvoří vážené vzdálenosti, třetí cyklus vypočte výslednou hodnotu
 //  interpolovaného bodu
@@ -159,7 +165,7 @@ public class Ukol2 {
     }
 //  Metoda, která počítá vzdálenosti načtených bodů od bodu interpolovaného
 //  Vstup: souřadnice načtených bodů x a y, souřadnice mřížových bodů x a y
-//  výsledné pole save, hodnoty načtených bodů a počet řádků
+//  výsledné pole save, hodnoty načtených bodů, počet řádků a exponent
 //  Výstup: žádný.
 //  Metoda po výpočtu vzdálenosti volá metodu idw, která vrátí hodnotu, jenž je
 //  uložena do pole save. Při vzdálenosti 0 je bodu přiřazena hodnota bodu
@@ -246,6 +252,11 @@ public class Ukol2 {
             }
         }
     }
+//      Metoda, která najde parametr "-p" a naparsuje číslo, které
+//      se nachází za parametrem "-p", danou hodnotu vrátí, pokud "-p" nenajde
+//      vrátí defaultní hodnotu 2
+//      Vstup: delka parametrů, parametry a exponent
+//      Výstup: hodnota exponentu
     public static double parametr(int delka,String[] args,double exp){
         for(int i = 0;i < delka;i++){
             if("-p".equals(args[i])){
