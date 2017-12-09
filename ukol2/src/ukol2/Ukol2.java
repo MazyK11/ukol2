@@ -94,38 +94,32 @@ public class Ukol2 {
 //        }
 
         double save [] = new double[100*100];
-        
-        for (int i =0;i<100;i++){
-            barsx[i] = i;
-            barsy[i] = i;
-        }
-
         double dist[]= new double [c];
         double weightdist[] = new double[c];
         double helpdist[]= new double [c];
         double truevalue = 0;
         
-//        distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,
-//                helpdist,c);
-//        for(int i= 0;i < 100*100;i++){
-//        System.out.format("%f\n",save[i]);
-//        }
-//        
-//        PrintWriter a;
-//        try {
-//            a = new PrintWriter(args[1]);
-//            for(int i =0;i < 100;i++){
-//                for(int j =0;j<100;j++){
-//                    a.format("%f ;", save[j+(i*100)]);
-//                }
-//               a.println();
-//            }
-//            a.close();
-//        }
-//        catch(FileNotFoundException ex){
-//            System.out.print("Soubor nebyl nalezen\n");
-//            System.exit(-1);
-//        }
+        distance(x,y,dist,barsx,barsy,save,weightdist,truevalue,value,
+                helpdist,c);
+        for(int i= 0;i < 100*100;i++){
+        System.out.format("%.2f\n",save[i]);
+        }
+        
+        PrintWriter a;
+        try {
+            a = new PrintWriter(args[1]);
+            for(int i =0;i < 100;i++){
+                for(int j =0;j<100;j++){
+                    a.format("%.2f ;", save[j+(i*100)]);
+                }
+               a.println();
+            }
+            a.close();
+        }
+        catch(FileNotFoundException ex){
+            System.out.print("Soubor nebyl nalezen\n");
+            System.exit(-1);
+        }
         
     }
     public static double idw(double dist[],double weightdist[],double
@@ -145,8 +139,8 @@ public class Ukol2 {
         return truevalue;
     }
     
-    public static void distance(double x[], double y[],double dist[], int
-            barsx [],int barsy [],double save[],double weightdist[],double
+    public static void distance(double x[], double y[],double dist[], double
+            barsx [],double barsy [],double save[],double weightdist[],double
             truevalue, double value[], double helpdist[],int c){
         int u =0;
         int m =0;
