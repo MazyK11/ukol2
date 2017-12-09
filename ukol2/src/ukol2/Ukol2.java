@@ -152,11 +152,21 @@ public class Ukol2 {
             if (u == 100){
                 break;
             }
+            int count =  0;
             for(int i = 0; i < c;i++) {
                 dist[i] = Math.sqrt((x[i] - barsx[j])*(x[i] - barsx[j]) + 
-                        (y[i] - barsy[u])*(y[i] -barsy[u])); 
+                        (y[i] - barsy[u])*(y[i] -barsy[u]));
+                if (dist[i] == 0){
+                    save[m] = value[i];
+                    count = i;
+                    break;
+                }
             }
+            if(save[m] == value[count]){
+            }
+            else {
             save[m]= idw(dist,weightdist,truevalue,value,helpdist,c);
+            }
             m++;
         }
     }
