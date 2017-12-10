@@ -81,20 +81,15 @@ public class Ukol2 {
     public static double idw(double dist[],double value[],int radky, 
             double exponent){
 //      Vytvoření pomocných proměnných
-        double weightdist[] = new double[radky];
-        double helpdist[]= new double [radky];
+        double weightdist = 0;
         double truevalue = 0;
         double k =0;
         for (int i =0; i < radky;i++){
             k =k + (1/Math.pow(dist[i],exponent));
-            helpdist[i] = (1/Math.pow(dist[i],exponent));
         }
         for (int i = 0; i< radky;i++){
-            weightdist[i] = helpdist[i] * (1/k);
-            
-        }
-        for (int i =0;i < radky;i++){
-            truevalue = truevalue + (weightdist[i] * value[i]); 
+            weightdist = (1/Math.pow(dist[i],exponent)) * (1/k);
+            truevalue = truevalue + (weightdist * value[i]); 
         }
         return truevalue;
     }
