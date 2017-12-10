@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Locale;
 
 /**
  *
@@ -21,81 +22,16 @@ public class Ukol2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//      Vytvoření proměnné c, do které uložím počet řádků
 //      do proměnné delka si uložím počet parametrů v args 
-        int c = 0;
-        int delka = args.length;
-//      try blok pro zjištění počtu řádků, catch zachytává všechny možné výjimky
-//      a ukončuje soubor přes System.exit(-1)
-        try {
-            BufferedReader vstup = new BufferedReader(new FileReader
-            (args[delka-2]));
-            String r = vstup.readLine();
-            String [] roww = r.split(",");
-            c = Integer.parseInt(roww[0]);
-        }
-        catch(NumberFormatException ex){
-            System.out.print("nalezeny chybné znaky\n");
-            System.exit(-1);
-        }
-        catch(FileNotFoundException ex){
-            System.out.print("Soubor nebyl nalezen\n");
-            System.exit(-1);
-        }
-        catch(IOException ex){
-            System.out.print("Chyba při načítání řádku\n");
-            System.exit(-1);
-        }
+        int delka = args.length; 
+        int c = nacteni1radku(args,delka);
 //      vytvoření pole p o velikosti počtu řádků * počet sloupců
         double p[] = new double[c*3];
-//      try - na načtení řádků a naplnění pole items 
-//      následné volání metody, která parsuje načtené hodnoty a naplní jimi 
-//      pole p
-        try{
-            BufferedReader vstup = new BufferedReader(new FileReader
-            (args[delka-2]));
-            String row;
-            String [] items;
-            int k = 0;
-            vstup.readLine();
-            for(int i=0;i < c;i++){
-                row = vstup.readLine();
-                items = row.split(",");
-                parse(items,p,k);
-                k = k + 3;
-            }
-        }
-        catch(NumberFormatException ex){
-            System.out.print("nalezeny chybné znaky\n");
-                System.exit(-1);
-        }
-        catch(FileNotFoundException ex){
-            System.out.print("Soubor nebyl nalezen\n");
-            System.exit(-1);
-        }
-        catch(IOException ex){
-            System.out.print("Chyba při načítání řádku\n");
-            System.exit(-1);
-        }
-        
+        nactenizbytku(args,delka,p,c);  
 //      proměnná exp je defaultně nastavená na 2
         double exp = 2;
-//      Pomocí try, catch a podmínky jsou ošetřeny nekorektně zadané parametry
-//      pokud bude zadán nekorektní vstup program použije defaultní exponent 2
-        try {
-            exp = parametr(delka,args,exp);
-            if (exp <= 0){
-                System.out.print("exponent nemůže být menší nebo rovno 0, "
-                        + "bude použit defaultní exponent 2");
-                exp = 2;
-            }
-        }
-        catch(NumberFormatException ex){
-            System.out.print("nalezeny chybné znaky, bude použit defaultní"
-                    + " exponent 2\n");
-            exp = 2;
-        }
-        
+        exp = parametr(args,exp);
+
 //      vytvoření polí, které reprezentují načtené hodnoty - pro 
 //      větší přehlednost
         double x[] = new double [c];
@@ -114,16 +50,17 @@ public class Ukol2 {
         maxmin(p,c,barsx,barsy);
 
 //      Vytvoření konečného pole save, do kterého se uloží výsledná tabulka
-        double save [] = new double[100*100];
-        distance(x,y,barsx,barsy,save,value,c,exp);
+        double result [] = new double[100*100];
+        distance(x,y,barsx,barsy,result,value,c,exp);
 
 //      Zápis do výstupního souboru
         PrintWriter a;
         try {
+            Locale.setDefault(Locale.US);
             a = new PrintWriter(args[delka-1]);
             for(int i =0;i < 100;i++){
                 for(int j =0;j<100;j++){
-                    a.format("%.2f ;", save[j+(i*100)]);
+                    a.format("%.2f ;", result[j+(i*100)]);
                 }
                a.println();
 //          zapisuje se po řádcích, dokud zápis nedosáhne 100 sloupců
@@ -171,7 +108,7 @@ public class Ukol2 {
 //  uložena do pole save. Při vzdálenosti 0 je bodu přiřazena hodnota bodu
 //  vstupního - jedná se o ten samí bod
     public static void distance(double x[], double y[],double
-            barsx [],double barsy [],double save[], double value[],int c,
+            barsx [],double barsy [],double result[], double value[],int c,
             double exp){
         double dist[]= new double [c];
         int u =0;
@@ -189,15 +126,15 @@ public class Ukol2 {
                 dist[i] = Math.sqrt((x[i] - barsx[j])*(x[i] - barsx[j]) + 
                         (y[i] - barsy[u])*(y[i] -barsy[u]));
                 if (dist[i] == 0){
-                    save[m] = value[i];
+                    result[m] = value[i];
                     count = i;
                     break;
                 }
             }
-            if(save[m] == value[count]){
+            if(result[m] == value[count]){
             }
             else {
-            save[m]= idw(dist,value,c,exp);
+            result[m]= idw(dist,value,c,exp);
             }
             m++;
         }
@@ -257,13 +194,83 @@ public class Ukol2 {
 //      vrátí defaultní hodnotu 2
 //      Vstup: delka parametrů, parametry a exponent
 //      Výstup: hodnota exponentu
-    public static double parametr(int delka,String[] args,double exp){
-        for(int i = 0;i < delka;i++){
-            if("-p".equals(args[i])){
-                exp = Double.parseDouble(args[i+1]);
+//      pokud bude zadán nekorektní vstup program použije defaultní exponent 2
+    public static double parametr(String[] args,double exp){
+        try {
+            for(int i = 0;i < args.length;i++){
+                if("-p".equals(args[i])){
+                    exp = Double.parseDouble(args[i+1]);
+                }
+                if (exp <= 0){
+                    System.out.print("exponent nemůže být menší nebo rovno 0, "
+                        + "bude použit defaultní exponent 2");
+                    exp = 2;
+                }
                 return exp;
             }
         }
+        catch(NumberFormatException ex){
+            System.out.print("nalezeny chybné znaky, bude použit defaultní"
+                    + " exponent 2\n");
+            exp = 2;
+        }
         return exp;
-    } 
+    }
+//      try blok pro zjištění počtu řádků, catch zachytává všechny možné výjimky
+//      a ukončuje program přes System.exit(-1)
+//      Vytvoření proměnné c, do které uložím počet řádků
+    public static int nacteni1radku(String[] args, int delka){
+        try { 
+            BufferedReader vstup = new BufferedReader(new FileReader
+            (args[delka-2]));
+            String r = vstup.readLine();
+            String [] roww = r.split(",");
+            return Integer.parseInt(roww[0]);
+        }
+        catch(NumberFormatException ex){
+            System.out.print("nalezeny chybné znaky\n");
+            System.exit(-1);
+        }
+        catch(FileNotFoundException ex){
+            System.out.print("Soubor nebyl nalezen\n");
+            System.exit(-1);
+        }
+        catch(IOException ex){
+            System.out.print("Chyba při načítání řádku\n");
+            System.exit(-1);
+        }
+        return 0;
+    }
+//      try - na načtení řádků a naplnění pole items 
+//      následné volání metody, která parsuje načtené hodnoty a naplní jimi 
+//      pole p
+    public static void nactenizbytku(String[] args, int delka, double p[],
+            int c){
+        try{
+            BufferedReader vstup = new BufferedReader(new FileReader
+            (args[delka-2]));
+            String row;
+            String [] items;
+            int k = 0;
+            vstup.readLine();
+            for(int i=0;i < c;i++){
+                row = vstup.readLine();
+                items = row.split(",");
+                parse(items,p,k);
+                k = k + 3;
+            }
+        }
+        catch(NumberFormatException ex){
+            System.out.print("nalezeny chybné znaky\n");
+                System.exit(-1);
+        }
+        catch(FileNotFoundException ex){
+            System.out.print("Soubor nebyl nalezen\n");
+            System.exit(-1);
+        }
+        catch(IOException ex){
+            System.out.print("Chyba při načítání řádku\n");
+            System.exit(-1);
+        }
+    }
 }
