@@ -298,8 +298,6 @@ public class Ukol2 {
                     a.format("%.2f ;", result[j+(i*100)]);
                 }
                a.println();
-//          zapisuje se po řádcích, dokud zápis nedosáhne 100 sloupců
-//          pak se odřádkuje 
             }
             a.close();
         }
