@@ -28,7 +28,6 @@ public class Ukol2 {
             System.out.print("Nebyly zadány parametry vstupu a výstupu");
             System.exit(-1);
         }
-        
         int radky = nacteni1radku(args);
 /**  vytvoření pole x,y a value - reprezentují souřadnice a hodnotu 
 *    načtených bodů
