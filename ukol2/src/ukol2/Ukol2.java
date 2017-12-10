@@ -22,66 +22,54 @@ public class Ukol2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//      ošetření proti pádu bez argumentů
+/**     ošetření proti pádu, když nejsou zadány argumenty 
+ */
         if (args.length  <= 1){
             System.out.print("Nebyly zadány parametry vstupu a výstupu");
             System.exit(-1);
         }
+        
         int radky = nacteni1radku(args);
-//      vytvoření pole p o velikosti počtu řádků * počet sloupců
+/**  vytvoření pole x,y a value - reprezentují souřadnice a hodnotu 
+*    načtených bodů
+*/
         double x[] = new double [radky];
         double y[] = new double [radky];
         double value[] = new double [radky];
-        
         nactenizbytku(args,radky,x,y,value);
 
-//      proměnná exp je defaultně nastavená na 2
+/** proměnná exponent je defaultně nastavená na 2
+ */
         double exponent = 2;
         exponent = parametr(args,exponent);
 
-
-        
-//      Vytvoření proměnných, které reprezentují mřížku
+/**  Vytvoření proměnných, které reprezentují mřížku a následné volání
+ */
         double barsx []= new double[100];
         double barsy []= new double [100];
         maxmin(x,y,radky,barsx,barsy);
-
-//      Vytvoření konečného pole save, do kterého se uloží výsledná tabulka
+        
+/**  Vytvoření konečného pole result, do kterého se uloží výsledná tabulka
+ */
         double result [] = new double[100*100];
         distance(x,y,barsx,barsy,result,value,radky,exponent);
 
-//      Zápis do výstupního souboru
-        PrintWriter a;
-        try {
-            Locale.setDefault(Locale.US);
-            a = new PrintWriter(args[args.length-1]);
-            for(int i =0;i < 100;i++){
-                for(int j =0;j<100;j++){
-                    a.format("%.2f ;", result[j+(i*100)]);
-                }
-               a.println();
-//          zapisuje se po řádcích, dokud zápis nedosáhne 100 sloupců
-//          pak se odřádkuje 
-            }
-            a.close();
-        }
-        catch(FileNotFoundException ex){
-            System.out.format("Soubor %s nebyl nalezen\n",args[args.length-1]);
-            System.exit(-1);
-        }
-        
+        zápis(args,result);   
     }
-//  Metoda výpočtu idw
-//  vstupy: pole vypočtených vzdáleností, pole s hodnotamijednotlivých bodů,
-//  počet řádků a exponent.
-//  Výstup: hodnota interpolovaného bodu
-//  první cyklus vypočte koeficient k, druhý cyklus použije vypočtený koeficient
-//  a vytvoří vážené vzdálenosti, třetí cyklus vypočte výslednou hodnotu
-//  interpolovaného bodu
+/** Metoda výpočtu idw
+*   první cyklus vypočte koeficient k, druhý cyklus použije vypočtený koeficient,
+*   vytvoří vážené vzdálenosti a vypočte výslednou hodnotu interpolovaného bodu
+*   @param dist - pole vypočtených vzdáleností
+*   @param value - pole s hodnotami jednotlivých bodů
+*   @param radky - počet řádků
+*   @param exponent - exponent
+*   @return truevalue - hodnota interpolovaného bodu
+*/ 
     public static double idw(double dist[],double value[],int radky, 
             double exponent){
-//      Vytvoření pomocných proměnných
-        double weightdist = 0;
+/**     Vytvoření pomocných proměnných
+*/
+        double weightdist;
         double truevalue = 0;
         double k =0;
         for (int i =0; i < radky;i++){
@@ -93,13 +81,19 @@ public class Ukol2 {
         }
         return truevalue;
     }
-//  Metoda, která počítá vzdálenosti načtených bodů od bodu interpolovaného
-//  Vstup: souřadnice načtených bodů x a y, souřadnice mřížových bodů x a y
-//  výsledné pole save, hodnoty načtených bodů, počet řádků a exponent
-//  Výstup: žádný.
-//  Metoda po výpočtu vzdálenosti volá metodu idw, která vrátí hodnotu, jenž je
-//  uložena do pole save. Při vzdálenosti 0 je bodu přiřazena hodnota bodu
-//  vstupního - jedná se o ten samí bod
+/**Metoda, která počítá vzdálenosti načtených bodů od bodu interpolovaného
+*   @param value - pole s hodnotami jednotlivých bodů
+*   @param radky - počet řádků
+*   @param exponent - exponent
+*   @param x - pole x souřadnic načtených bodů
+*   @param y - pole y souřadnic načtených bodů
+*   @param barsy - pole x souřadnic mřížky 
+*   @param barsx - pole y souřadnic mřížky
+*   @param result - pole do kterého se uloží výsledné hodnoty
+*  Metoda po výpočtu vzdálenosti volá metodu idw, která vrátí hodnotu, jenž je
+*  uložena do pole result. Při vzdálenosti 0 je bodu přiřazena hodnota bodu
+*  vstupního - jedná se o ten samí bod
+*/
     public static void distance(double x[], double y[],double
             barsx [],double barsy [],double result[], double value[],int radky,
             double exponent){
@@ -133,16 +127,19 @@ public class Ukol2 {
         }
     }
     
-//  Metoda, která najde minimum a maximu načtených souřadnic x, a následně  
-//  naplní pole barsx hodnotami se stejným rozdílem od min do max. Potom 
-//  proces zopakuje pro souřadnice y
-//  Vstup: pole p, počet řádků c, pole mřížových souřadnic x a y 
-//  Výstup: nic
+/** Metoda, která najde minimum a maximu načtených souřadnic x a y
+*   a vytvoří mřížku
+*   @param x - pole x souřadnic načtených bodů
+*   @param y - pole y souřadnic načtených bodů
+*   @param barsy - pole x souřadnic mřížky 
+*   @param barsx - pole y souřadnic mřížky
+*   @param radky - počet řádků
+*/
     public static void maxmin(double x[],double y[],int radky,
             double barsx [],double barsy [])
     {
-        double max = 0;
-        double min = 0;
+        double max;
+        double min;
         for(int j =0;j<2;j++){
             if(j ==0){
                 max =x[j];
@@ -190,12 +187,14 @@ public class Ukol2 {
             }
         }
     }
-//      Metoda, která najde parametr "-p" a naparsuje číslo, které
-//      se nachází za parametrem "-p", danou hodnotu vrátí, pokud "-p" nenajde
-//      vrátí defaultní hodnotu 2
-//      Vstup: delka parametrů, parametry a exponent
-//      Výstup: hodnota exponentu
-//      pokud bude zadán nekorektní vstup program použije defaultní exponent 2
+    
+/** Metoda, která najde parametr "-p" a naparsuje číslo, které
+*   se nachází za parametrem "-p", danou hodnotu vrátí, pokud "-p" nenajde
+*   vrátí defaultní hodnotu 2
+*   @param exponent - exponent
+*   @param args - string argumentů
+*   @return exponent
+*/     
     public static double parametr(String[] args,double exponent){
         try {
             for(int i = 0;i < args.length;i++){
@@ -217,9 +216,12 @@ public class Ukol2 {
         }
         return exponent;
     }
-//      try blok pro zjištění počtu řádků, catch zachytává všechny možné výjimky
-//      a ukončuje program přes System.exit(-1)
-//      Vytvoření proměnné c, do které uložím počet řádků
+    
+/**   Metoda, která načte první řádek a naparsuje ho.
+*     catch zachytává možné výjimky a ukončuje program přes System.exit(-1)
+*     @param args - string argumentů
+*     @return počet řádků
+*/    
     public static int nacteni1radku(String[] args){
         try { 
             BufferedReader vstup = new BufferedReader(new FileReader
@@ -242,11 +244,15 @@ public class Ukol2 {
         }
         return 0;
     }
-//      try - na načtení řádků a naplnění pole items 
-//      následné volání metody, která parsuje načtené hodnoty a naplní jimi 
-//      pole p
-//  Metoda, která převede načtená čísla na hodnoty, které jim odpovídají
-//  "4" = 4 
+    
+/** Metoda, která načte jednotlivě řádky se souřadnicemi a rozláme je podle
+*   čárky. Následně parsuje načtené hodnoty a naplní jimi přiřazená pole
+*   @param value - pole s hodnotami jednotlivých bodů
+*   @param radky - počet řádků
+*   @param x - pole x souřadnic načtených bodů
+*   @param y - pole y souřadnic načtených bodů
+*   @param args - string argumentů
+*/
     public static void nactenizbytku(String[] args,int radky, double x[],
             double y[],double value[]){
         try{
@@ -275,6 +281,30 @@ public class Ukol2 {
         }
         catch(IOException ex){
             System.out.print("Chyba při načítání řádku\n");
+            System.exit(-1);
+        }
+    }
+    /** Metoda, která otevře výstupní soubor, a zapíše do něj výsledky
+     * @param args
+     * @param result 
+     */
+    public static void zápis(String[]args,double result[]){
+        PrintWriter a;
+        try {
+            Locale.setDefault(Locale.US);
+            a = new PrintWriter(args[args.length-1]);
+            for(int i =0;i < 100;i++){
+                for(int j =0;j<100;j++){
+                    a.format("%.2f ;", result[j+(i*100)]);
+                }
+               a.println();
+//          zapisuje se po řádcích, dokud zápis nedosáhne 100 sloupců
+//          pak se odřádkuje 
+            }
+            a.close();
+        }
+        catch(FileNotFoundException ex){
+            System.out.format("Soubor %s nebyl nalezen\n",args[args.length-1]);
             System.exit(-1);
         }
     }
