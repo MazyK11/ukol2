@@ -28,14 +28,21 @@ public class Ukol2 {
             System.out.print("Nebyly zadány parametry vstupu a výstupu");
             System.exit(-1);
         }
-        int radky = nacteni1radku(args);
-/**  vytvoření pole x,y a value - reprezentují souřadnice a hodnotu 
-*    načtených bodů
+
+/**  Vytvoření dvourozměrného pole souradnice, do kterého se uloží jednotlivé
+*    načtené hodnoty - volání metody nacteni.
 */
-        double x[] = new double [radky];
-        double y[] = new double [radky];
-        double value[] = new double [radky];
-        nactenizbytku(args,radky,x,y,value);
+        double souradnice[][] = nacteni(args);
+        int radky = souradnice[0].length;
+
+        double x[] = new double [20];
+        double y[] = new double [20];
+        double value[] = new double [20];
+        for(int i =0;i<radky;i++){
+            x[i] = souradnice[0][i];
+            y[i] = souradnice[1][i];
+            value[i] = souradnice[2][i];
+        }
 
 /** proměnná exponent je defaultně nastavená na 2
  */
@@ -137,56 +144,34 @@ public class Ukol2 {
     public static void maxmin(double x[],double y[],int radky,
             double barsx [],double barsy [])
     {
-        double max;
-        double min;
+        double xy []= new double [radky*2];
+        for(int i =0;i<x.length;i++){
+            xy [i*2] =x[i];
+            xy [(i*2)+1] =y[i];
+        }
+        double maxmin[] = {x[0],y[0],x[0],y[0]};
         for(int j =0;j<2;j++){
-            if(j ==0){
-                max =x[j];
-                min= x[j];
-                for(int i = 0;i < radky;i++){
-                    if( max >= x[i]){ 
-                    }
-                    else{
-                    max = x[i];
-                    }
-                    if( min <= x[i]){ 
-                    }
-                    else{
-                    min = x[i];
-                    }
+            for(int i = 0;i < x.length;i++){
+                if( maxmin[0+j] < xy[(i*2)+j]){ 
+                    maxmin[0+j] = xy[(i*2)+j];
                 }
-                double r = max- min;
-                r = r/(100-1);
-                barsx[0] = min;
-                for(int m = 1;m < 100;m++){
-                    barsx[m] = barsx[m-1] + r;
+                if( maxmin[2+j] > xy[(i*2)+j]){ 
+                    maxmin[2+j] = xy[(i*2)+j];
                 }
-            }  
-            else{
-                max = y[j-1];
-                min = y[j-1];
-                for(int i = 0;i < radky;i++){
-                    if( max >= y[i]){ 
-                    }
-                    else{
-                    max = y[i];
-                    }
-                    if( min <= y[i]){ 
-                    }
-                    else{
-                    min = y[i];
-                    }
-                }
-                double r = max- min;
-                r = r/(100-1);
-                barsy[0] = min;
-                for(int m = 1;m < 100;m++){
-                    barsy[m] = barsy[m-1] + r;
-                } 
             }
         }
+        double rx = maxmin[0]- maxmin[2];
+        double ry = maxmin[1]- maxmin[3];
+        rx = rx/(100-1);
+        ry = ry/(100-1);
+        barsx[0] = maxmin[2];
+        barsy[0] = maxmin[3];
+        for(int m = 1;m < 100;m++){
+            barsx[m] = barsx[m-1] + rx;
+            barsy[m] = barsy[m-1] + ry;
+        }
     }
-    
+       
 /** Metoda, která najde parametr "-p" a naparsuje číslo, které
 *   se nachází za parametrem "-p", danou hodnotu vrátí, pokud "-p" nenajde
 *   vrátí defaultní hodnotu 2
@@ -216,63 +201,35 @@ public class Ukol2 {
         return exponent;
     }
     
-/**   Metoda, která načte první řádek a naparsuje ho.
+/**   Metoda, která načte první řádek a naparsuje ho, dále načte
+ *    jednotlivě řádky se souřadnicemi a rozláme je podle
+*     čárky. Následně parsuje načtené hodnoty a naplní jimi pole p,
 *     catch zachytává možné výjimky a ukončuje program přes System.exit(-1)
 *     @param args - string argumentů
-*     @return počet řádků
+*     @return p - vrací pole
 */    
-    public static int nacteni1radku(String[] args){
+    public static double[][] nacteni(String[] args){
         try { 
             BufferedReader vstup = new BufferedReader(new FileReader
             (args[args.length-2]));
             String r = vstup.readLine();
             String [] roww = r.split(",");
-            return Integer.parseInt(roww[0]);
-        }
-        catch(NumberFormatException ex){
-            System.out.print("nalezeny chybné znaky\n");
-            System.exit(-1);
-        }
-        catch(FileNotFoundException ex){
-            System.out.format("Soubor %s nebyl nalezen\n",args[args.length-2]);
-            System.exit(-1);
-        }
-        catch(IOException ex){
-            System.out.print("Chyba při načítání řádku\n");
-            System.exit(-1);
-        }
-        return 0;
-    }
-    
-/** Metoda, která načte jednotlivě řádky se souřadnicemi a rozláme je podle
-*   čárky. Následně parsuje načtené hodnoty a naplní jimi přiřazená pole
-*   @param value - pole s hodnotami jednotlivých bodů
-*   @param radky - počet řádků
-*   @param x - pole x souřadnic načtených bodů
-*   @param y - pole y souřadnic načtených bodů
-*   @param args - string argumentů
-*/
-    public static void nactenizbytku(String[] args,int radky, double x[],
-            double y[],double value[]){
-        try{
-            BufferedReader vstup = new BufferedReader(new FileReader
-            (args[args.length-2]));
+            int radky = Integer.parseInt(roww[0]);
+            double p[][] = new double [3][radky];
             String row;
             String [] items;
-            int k = 0;
-            vstup.readLine();
             for(int i=0;i < radky;i++){
                 row = vstup.readLine();
                 items = row.split(",");
-                x[k] = Double.parseDouble(items[0]);
-                y[k] = Double.parseDouble(items[1]);
-                value[k] = Double.parseDouble(items[2]);
-                k++;
+                p[0][i] = Double.parseDouble(items[0]);
+                p[1][i] = Double.parseDouble(items[1]);
+                p[2][i] = Double.parseDouble(items[2]);
             }
+            return p;      
         }
         catch(NumberFormatException ex){
             System.out.print("nalezeny chybné znaky\n");
-                System.exit(-1);
+            System.exit(-1);
         }
         catch(FileNotFoundException ex){
             System.out.format("Soubor %s nebyl nalezen\n",args[args.length-2]);
@@ -282,6 +239,7 @@ public class Ukol2 {
             System.out.print("Chyba při načítání řádku\n");
             System.exit(-1);
         }
+        return null;
     }
     /** Metoda, která otevře výstupní soubor, a zapíše do něj výsledky
      * @param args
