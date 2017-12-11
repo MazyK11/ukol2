@@ -29,20 +29,11 @@ public class Ukol2 {
             System.exit(-1);
         }
 
-/**  Vytvoření dvourozměrného pole souradnice, do kterého se uloží jednotlivé
+/**  Vytvoření dvourozměrného pole coor, do kterého se uloží jednotlivé
 *    načtené hodnoty - volání metody nacteni.
 */
-        double souradnice[][] = nacteni(args);
-        int radky = souradnice[0].length;
-
-        double x[] = new double [20];
-        double y[] = new double [20];
-        double value[] = new double [20];
-        for(int i =0;i<radky;i++){
-            x[i] = souradnice[0][i];
-            y[i] = souradnice[1][i];
-            value[i] = souradnice[2][i];
-        }
+        double coor[][] = nacteni(args);
+        int radky = coor[0].length;
 
 /** proměnná exponent je defaultně nastavená na 2
  */
@@ -53,12 +44,12 @@ public class Ukol2 {
  */
         double barsx []= new double[100];
         double barsy []= new double [100];
-        maxmin(x,y,radky,barsx,barsy);
+        maxmin(coor,radky,barsx,barsy);
         
 /**  Vytvoření konečného pole result, do kterého se uloží výsledná tabulka
  */
         double result [] = new double[100*100];
-        distance(x,y,barsx,barsy,result,value,radky,exponent);
+        distance(coor,barsx,barsy,result,radky,exponent);
 
         zápis(args,result);   
     }
@@ -66,12 +57,12 @@ public class Ukol2 {
 *   první cyklus vypočte koeficient k, druhý cyklus použije vypočtený koeficient,
 *   vytvoří vážené vzdálenosti a vypočte výslednou hodnotu interpolovaného bodu
 *   @param dist - pole vypočtených vzdáleností
-*   @param value - pole s hodnotami jednotlivých bodů
+*   @param coor - dvourozměrné pole se souřadnicemi a hodnotami
 *   @param radky - počet řádků
 *   @param exponent - exponent
 *   @return truevalue - hodnota interpolovaného bodu
 */ 
-    public static double idw(double dist[],double value[],int radky, 
+    public static double idw(double dist[],double coor[][],int radky, 
             double exponent){
 /**     Vytvoření pomocných proměnných
 */
@@ -83,16 +74,14 @@ public class Ukol2 {
         }
         for (int i = 0; i< radky;i++){
             weightdist = (1/Math.pow(dist[i],exponent)) * (1/k);
-            truevalue = truevalue + (weightdist * value[i]); 
+            truevalue = truevalue + (weightdist * coor[2][i]); 
         }
         return truevalue;
     }
 /**Metoda, která počítá vzdálenosti načtených bodů od bodu interpolovaného
-*   @param value - pole s hodnotami jednotlivých bodů
 *   @param radky - počet řádků
 *   @param exponent - exponent
-*   @param x - pole x souřadnic načtených bodů
-*   @param y - pole y souřadnic načtených bodů
+*   @param coor - dvourozměrné pole se souřadnicemi a hodnotami
 *   @param barsy - pole x souřadnic mřížky 
 *   @param barsx - pole y souřadnic mřížky
 *   @param result - pole do kterého se uloží výsledné hodnoty
@@ -100,9 +89,8 @@ public class Ukol2 {
 *  uložena do pole result. Při vzdálenosti 0 je bodu přiřazena hodnota bodu
 *  vstupního - jedná se o ten samí bod
 */
-    public static void distance(double x[], double y[],double
-            barsx [],double barsy [],double result[], double value[],int radky,
-            double exponent){
+    public static void distance(double coor[][],double barsx [],double barsy [],
+            double result[],int radky,double exponent){
         double dist[]= new double [radky];
         int u =0;
         int m =0;
@@ -116,18 +104,19 @@ public class Ukol2 {
             }
             int count =  0;
             for(int i = 0; i < radky;i++) {
-                dist[i] = Math.sqrt((x[i] - barsx[j])*(x[i] - barsx[j]) + 
-                        (y[i] - barsy[u])*(y[i] -barsy[u]));
+                dist[i] = Math.sqrt((coor[0][i] - barsx[j])*(coor[0][i]
+                        - barsx[j]) + (coor[1][i] - barsy[u])*(coor[1][i]
+                                -barsy[u]));
                 if (dist[i] == 0){
-                    result[m] = value[i];
+                    result[m] = coor[2][i];
                     count = i;
                     break;
                 }
             }
-            if(result[m] == value[count]){
+            if(result[m] == coor[2][count]){
             }
             else {
-            result[m]= idw(dist,value,radky,exponent);
+            result[m]= idw(dist,coor,radky,exponent);
             }
             m++;
         }
@@ -135,28 +124,22 @@ public class Ukol2 {
     
 /** Metoda, která najde minimum a maximu načtených souřadnic x a y
 *   a vytvoří mřížku
-*   @param x - pole x souřadnic načtených bodů
-*   @param y - pole y souřadnic načtených bodů
+*   @param coor - dvourozměrné pole se souřadnicemi a hodnotami
 *   @param barsy - pole x souřadnic mřížky 
 *   @param barsx - pole y souřadnic mřížky
 *   @param radky - počet řádků
 */
-    public static void maxmin(double x[],double y[],int radky,
-            double barsx [],double barsy [])
+    public static void maxmin(double coor[][],int radky,double barsx [],
+            double barsy [])
     {
-        double xy []= new double [radky*2];
-        for(int i =0;i<x.length;i++){
-            xy [i*2] =x[i];
-            xy [(i*2)+1] =y[i];
-        }
-        double maxmin[] = {x[0],y[0],x[0],y[0]};
+        double maxmin[] = {coor[0][0],coor[1][0],coor[0][0],coor[1][0]};
         for(int j =0;j<2;j++){
-            for(int i = 0;i < x.length;i++){
-                if( maxmin[0+j] < xy[(i*2)+j]){ 
-                    maxmin[0+j] = xy[(i*2)+j];
+            for(int i = 0;i < radky;i++){
+                if( maxmin[0+j] < coor[0+j][i]){ 
+                    maxmin[0+j] = coor[0+j][i];
                 }
-                if( maxmin[2+j] > xy[(i*2)+j]){ 
-                    maxmin[2+j] = xy[(i*2)+j];
+                if( maxmin[2+j] > coor[0+j][i]){ 
+                    maxmin[2+j] = coor[0+j][i];
                 }
             }
         }
