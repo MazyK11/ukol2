@@ -78,7 +78,8 @@ public class Ukol2 {
         }
         return truevalue;
     }
-/**Metoda, která počítá vzdálenosti načtených bodů od bodu interpolovaného
+/**Metoda, která počítá vzdálenosti načtených bodů od bodu interpolovaného a
+*   volá metodu pro výpočet IDW.
 *   @param radky - počet řádků
 *   @param exponent - exponent
 *   @param coor - dvourozměrné pole se souřadnicemi a hodnotami
