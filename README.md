@@ -3,7 +3,7 @@
 ### Popis programu
 Program je neinteraktivní a k jeho spuštění je potřeba zadat parametry ve formě vstup.csv výstup.csv. Pokud chce uživatel zadat exponent „-p“, který bude použit ve váhové funkci, pak je nutné ho napsat před vstup a výstup. Příklad: -p 10 vstup.csv vystup.csv.
 
-Program načte soubor, ve kterém je na prvním řádku napsaný počet řádků, na dalších řádcích jsou pak napsané souřadnice x, y a jejich naměřená hodnota. V souboru musí být místo desetinné čárky desetinná tečka a čísla musí být od sebe oddělená čárkou. Po načtení souboru program převede načtená čísla na jejich numerické hodnoty a vytvoří síť 100x100. Krajní hrany sítě obsahují body s minimálními respektive maximálními souřadnicemi načtených bodů. Na základě načtených bodů, program provede interpolaci jednotlivých bodů v síti pomocí metody IDW. Po dokončení interpolace, jsou výsledné hodnoty zaokrouhleny na dvě desetinná místa a program je zapíše do výstupního souboru.
+Program načte soubor, ve kterém je na prvním řádku napsaný počet řádků, na dalších řádcích jsou pak napsané souřadnice x, y a jejich naměřená hodnota. V souboru musí být místo desetinné čárky desetinná tečka a čísla musí být od sebe oddělená čárkou. Po načtení souboru program převede načtená čísla na jejich numerické hodnoty a vytvoří síť 100x100. Krajní hrany sítě obsahují body s minimálními respektive maximálními souřadnicemi načtených bodů. Na základě načtených bodů, program provede interpolaci jednotlivých bodů v síti pomocí metody IDW. Po dokončení interpolace jsou výsledné hodnoty zaokrouhleny na dvě desetinná místa a program je zapíše do výstupního souboru.
 
 ### Funkcionalita
 
