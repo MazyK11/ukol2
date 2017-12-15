@@ -25,7 +25,7 @@ public class Ukol2 {
 /**     ošetření proti pádu, když nejsou zadány argumenty 
  */
         if (args.length  <= 1){
-            System.out.print("Nebyly zadány parametry vstupu a výstupu");
+            System.out.print("Nebyly zadány parametry vstupu a výstupu\n");
             System.exit(-1);
         }
 
@@ -33,7 +33,6 @@ public class Ukol2 {
 *    načtené hodnoty - volání metody nacteni.
 */
         double coor[][] = nacteni(args);
-        int radky = coor[0].length;
 
 /** proměnná exponent je defaultně nastavená na 2
  */
@@ -44,35 +43,36 @@ public class Ukol2 {
  */
         double barsx []= new double[100];
         double barsy []= new double [100];
-        maxmin(coor,radky,barsx,barsy);
+        maxmin(coor,barsx,barsy);
         
 /**  Vytvoření konečného pole result, do kterého se uloží výsledná tabulka
  */
-        double result [] = new double[100*100];
-        distance(coor,barsx,barsy,result,radky,exponent);
+        double result [][] = new double[100][100];
+        distance(coor,barsx,barsy,result,exponent);
 
-        zápis(args,result);   
+        zapis(args,result);   
     }
 /** Metoda výpočtu idw
 *   první cyklus vypočte koeficient k, druhý cyklus použije vypočtený koeficient,
 *   vytvoří vážené vzdálenosti a vypočte výslednou hodnotu interpolovaného bodu
 *   @param dist - pole vypočtených vzdáleností
 *   @param coor - dvourozměrné pole se souřadnicemi a hodnotami
-*   @param radky - počet řádků
 *   @param exponent - exponent
 *   @return truevalue - hodnota interpolovaného bodu
 */ 
-    public static double idw(double dist[],double coor[][],int radky, 
-            double exponent){
+    public static double idw(double dist[],double coor[][],double exponent){
 /**     Vytvoření pomocných proměnných
 */
         double weightdist;
         double truevalue = 0;
         double k =0;
-        for (int i =0; i < radky;i++){
+        for (int i =0; i < coor[0].length;i++){
+             if (dist[i] == 0){
+                return coor[2][i];
+            }
             k =k + (1/Math.pow(dist[i],exponent));
         }
-        for (int i = 0; i< radky;i++){
+        for (int i = 0; i< coor[0].length;i++){
             weightdist = (1/Math.pow(dist[i],exponent)) * (1/k);
             truevalue = truevalue + (weightdist * coor[2][i]); 
         }
@@ -80,21 +80,19 @@ public class Ukol2 {
     }
 /**Metoda, která počítá vzdálenosti načtených bodů od bodu interpolovaného a
 *   volá metodu pro výpočet IDW.
-*   @param radky - počet řádků
 *   @param exponent - exponent
 *   @param coor - dvourozměrné pole se souřadnicemi a hodnotami
 *   @param barsy - pole x souřadnic mřížky 
 *   @param barsx - pole y souřadnic mřížky
-*   @param result - pole do kterého se uloží výsledné hodnoty
+*   @param result - dvourozměrné pole, do kterého se uloží výsledné hodnoty
 *  Metoda po výpočtu vzdálenosti volá metodu idw, která vrátí hodnotu, jenž je
 *  uložena do pole result. Při vzdálenosti 0 je bodu přiřazena hodnota bodu
-*  vstupního - jedná se o ten samí bod
+*  vstupního - jedná se o ten samý bod
 */
     public static void distance(double coor[][],double barsx [],double barsy [],
-            double result[],int radky,double exponent){
-        double dist[]= new double [radky];
+            double result[][],double exponent){
+        double dist[]= new double [coor[0].length];
         int u =0;
-        int m =0;
         for (int j =0;j<(100+1);j++){
             if(j==100){
                 u = u +1;
@@ -103,23 +101,12 @@ public class Ukol2 {
             if (u == 100){
                 break;
             }
-            int count =  0;
-            for(int i = 0; i < radky;i++) {
+            for(int i = 0; i < coor[0].length;i++) {
                 dist[i] = Math.sqrt((coor[0][i] - barsx[j])*(coor[0][i]
                         - barsx[j]) + (coor[1][i] - barsy[u])*(coor[1][i]
                                 -barsy[u]));
-                if (dist[i] == 0){
-                    result[m] = coor[2][i];
-                    count = i;
-                    break;
-                }
             }
-            if(result[m] == coor[2][count]){
-            }
-            else {
-            result[m]= idw(dist,coor,radky,exponent);
-            }
-            m++;
+                result[u][j]= idw(dist,coor,exponent);
         }
     }
     
@@ -128,14 +115,15 @@ public class Ukol2 {
 *   @param coor - dvourozměrné pole se souřadnicemi a hodnotami
 *   @param barsy - pole x souřadnic mřížky 
 *   @param barsx - pole y souřadnic mřížky
-*   @param radky - počet řádků
 */
-    public static void maxmin(double coor[][],int radky,double barsx [],
+    public static void maxmin(double coor[][],double barsx [],
             double barsy [])
     {
         double maxmin[] = {coor[0][0],coor[1][0],coor[0][0],coor[1][0]};
+        
         for(int j =0;j<2;j++){
-            for(int i = 0;i < radky;i++){
+            
+            for(int i = 0;i < coor[0].length;i++){
                 if( maxmin[0+j] < coor[0+j][i]){ 
                     maxmin[0+j] = coor[0+j][i];
                 }
@@ -146,13 +134,12 @@ public class Ukol2 {
         }
         double rx = maxmin[0]- maxmin[2];
         double ry = maxmin[1]- maxmin[3];
-        rx = rx/(100-1);
-        ry = ry/(100-1);
         barsx[0] = maxmin[2];
         barsy[0] = maxmin[3];
-        for(int m = 1;m < 100;m++){
-            barsx[m] = barsx[m-1] + rx;
-            barsy[m] = barsy[m-1] + ry;
+        for(int i =1;i<100;i++){
+            double h = i; 
+            barsx[i] = (h/99*rx + maxmin[2]);
+            barsy[i] = (h/99*ry + maxmin[3]);
         }
     }
        
@@ -229,14 +216,14 @@ public class Ukol2 {
      * @param args
      * @param result 
      */
-    public static void zápis(String[]args,double result[]){
+    public static void zapis(String[]args,double result[][]){
         PrintWriter a;
         try {
             Locale.setDefault(Locale.US);
             a = new PrintWriter(args[args.length-1]);
             for(int i =0;i < 100;i++){
                 for(int j =0;j<100;j++){
-                    a.format("%.2f ;", result[j+(i*100)]);
+                    a.format("%.2f ,", result[i][j]);
                 }
                a.println();
             }
